@@ -1,4 +1,15 @@
-FROM php:7.3-apache
-RUN a2enmod rewrite
-RUN docker-php-ext-install mysqli
-ADD wordpress-6.0.1.tar.gz /wordpress
+FROM wordpress
+
+# Set environment variables used by the Wordpress image
+# DB_USER and DB_PASSWORD are included as an example. However,
+# these should be removed and set during docker run.
+
+ENV WORDPRESS_DB_HOST=bancodedados \
+    WORDPRESS_DB_USER=wordpress \
+    WORDPRESS_DB_PASSWORD=wordpress \
+    WORDPRESS_DB_NAME=wpsite \
+    WORDPRESS_TABLE_PREFIX=wp_
+
+COPY plugins/ /var/www/html/wp-content/plugins
+COPY themes/ /var/www/html/wp-content/themes
+COPY uploads/ /var/www/html/wp-content/uploads
