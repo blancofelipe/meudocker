@@ -1,0 +1,23 @@
+version:  "3.9"
+services:
+  bancodedados:
+    image: mariadb:latest
+    container_name: bancodedados_composer
+    environment:
+        MYSQL_ROOT_PASSWORD: wordpress
+        MYSQL_DATABASE: wordpress
+        MYSQL_USER: wordpress
+        MYSQL_PASSWORD: wordpress
+    volumes: ["db_data:/var/lib/mysql"]
+  
+  site:
+    depends_on:
+      - bancodedados
+    image: wordpress:latest
+    ports: ["9000:80"]
+    environment:
+        WORDPRESS_DB_HOST: bancodedados:3306
+        WORDPRESS_DB_USER: wordpress
+        WORDPRESS_DB_PASSWORD: wordpress
+volumes:
+  db_data:
