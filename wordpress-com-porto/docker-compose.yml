@@ -1,6 +1,6 @@
-version:  "3.9"
-services:
-  bancodedados:
+version:  "3.9" #versao do docker
+services: #as "instancias (mini-vms)"
+  bancodedados: #essa daqui levanta o banco de dados com uns usuários em um volume externo
     image: mariadb:latest
     container_name: bancodedados_composer
     environment:
@@ -10,24 +10,40 @@ services:
         MYSQL_PASSWORD: wordpress
     volumes: ["db_data_novo:/var/lib/mysql"]
   
-  site:
+  site: #essa daqui levanta o site com a imagem modificada minha, que é wordpress + plugins. Duvidas? Só ver o Dockerfile e o diretório!
     depends_on:
-      - bancodedados
-    image: wordpress-com-porto:1.5
-    ports: ["9000:80"]
+      - bancodedados #de quem ele depende
+    image: wordpress-completao:1.0 #a imagem e a versão
+    ports: ["9000:80"] #porta externa:porta interna
+    user: 0:0
     volumes:
-      - site_data:/var/www/html
-    environment:
+      - site_data:/var/www/html #o armazenamento - nesse caso, to usando um volume (HD) virtual
+    environment: #variáveis de ambiente - muda de aplicação pra aplicação, essa é a do wordpress
         WORDPRESS_DB_HOST: bancodedados:3306
         WORDPRESS_DB_USER: wordpress
         WORDPRESS_DB_PASSWORD: wordpress
-  phpmyadmin:
+
+  phpmyadmin: #essa daqui puxa o phpmyadmi na porta 8080 / dá pra instalar um só PHPMYADMIN pra administrar vários sites
     image: phpmyadmin
     restart: always
     ports:
       - 8080:80
     environment:
-      - PMA_HOST=bancodedados
+      - PMA_HOST=bancodedados #aqui eu entro o nome do container (VM) do banco. Nessa configuração eu boto um PHPMYADMIN por site. Se eu quiser outra, precisa mudar essa variável
+
+  cli: #habilita o wordpress client line
+    depends_on: #de quem ele depende
+      - bancodedados
+      - site
+    image: wordpress:cli #a imagem
+    user: 0:0
+    volumes: #o mesmo volume do site 
+      - site_data:/var/www/html
+    environment: #variaveis do banco - senao o CLI nao funciona
+      WORDPRESS_DB_HOST: bancodedados:3306
+      WORDPRESS_DB_USER: wordpress
+      WORDPRESS_DB_PASSWORD: wordpress
+
 volumes:
   db_data_novo:
   site_data:
