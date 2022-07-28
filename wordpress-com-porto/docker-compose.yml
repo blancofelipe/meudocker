@@ -1,40 +1,33 @@
-version: "3.1"
+version:  "3.9"
 services:
-www:
-build: .
-ports:
-- "8001:80"
+  bancodedados:
+    image: mariadb:latest
+    container_name: bancodedados_composer
+    environment:
+        MYSQL_ROOT_PASSWORD: wordpress
+        MYSQL_DATABASE: wordpress
+        MYSQL_USER: wordpress
+        MYSQL_PASSWORD: wordpress
+    volumes: ["db_data_novo:/var/lib/mysql"]
+  
+  site:
+    depends_on:
+      - bancodedados
+    image: wordpress-com-porto:1.5
+    ports: ["9000:80"]
+    volumes:
+      - site_data:/var/www/html
+    environment:
+        WORDPRESS_DB_HOST: bancodedados:3306
+        WORDPRESS_DB_USER: wordpress
+        WORDPRESS_DB_PASSWORD: wordpress
+  phpmyadmin:
+    image: phpmyadmin
+    restart: always
+    ports:
+      - 8080:80
+    environment:
+      - PMA_HOST=bancodedados
 volumes:
-- ./:/var/www/html/
-links:
-- db
-networks:
-- default
-db:
-image: mysql:8.0
-ports:
-- "3306:3306"
-command: --default-authentication-plugin=mysql_native_password
-environment:
-MYSQL_DATABASE: meubanco
-MYSQL_USER: admin
-MYSQL_PASSWORD: admin
-MYSQL_ROOT_PASSWORD: root
-volumes:
-- ./mysql:/docker-entrypoint-initdb.d
-- ./mysql/config:/etc/mysql/conf.d
-- persistent:/var/lib/mysql
-networks:
-- default
-phpmyadmin:
-image: phpmyadmin/phpmyadmin
-links:
-- db:db
-ports:
-- 8000:80
-environment:
-MYSQL_USER: admin
-MYSQL_PASSWORD: admin
-MYSQL_ROOT_PASSWORD: root
-volumes:
-persistent:
+  db_data_novo:
+  site_data:
