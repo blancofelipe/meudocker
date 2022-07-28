@@ -13,9 +13,9 @@ services: #as "instancias (mini-vms)"
   site: #essa daqui levanta o site com a imagem modificada minha, que é wordpress + plugins. Duvidas? Só ver o Dockerfile e o diretório!
     depends_on:
       - bancodedados #de quem ele depende
-    image: wordpress-completao:1.0 #a imagem e a versão
+    image: blancofelipe/wordpress-completao:1.0 #a imagem e a versão
     ports: ["9000:80"] #porta externa:porta interna
-    user: 0:0
+    #user: 0:0
     volumes:
       - site_data:/var/www/html #o armazenamento - nesse caso, to usando um volume (HD) virtual
     environment: #variáveis de ambiente - muda de aplicação pra aplicação, essa é a do wordpress
@@ -36,7 +36,7 @@ services: #as "instancias (mini-vms)"
       - bancodedados
       - site
     image: wordpress:cli #a imagem
-    user: 0:0
+    #user: 0:0
     volumes: #o mesmo volume do site 
       - site_data:/var/www/html
     environment: #variaveis do banco - senao o CLI nao funciona
