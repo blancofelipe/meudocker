@@ -13,7 +13,7 @@ services: #as "instancias (mini-vms)"
   site: #essa daqui levanta o site com a imagem modificada minha, que é wordpress + plugins. Duvidas? Só ver o Dockerfile e o diretório!
     depends_on:
       - bancodedados #de quem ele depende
-    image: blancofelipe/wordpress-completao:1.0 #a imagem e a versão
+    image: blancofelipe/wordpress-completao #a imagem e a versão
     ports: ["9000:80"] #porta externa:porta interna
     #user: 0:0
     volumes:
